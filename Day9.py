@@ -35,7 +35,6 @@ def part2():
             direction = line[0]
             step = int(line[2:])
             for _ in range(step):
-                previous = knots[0][:]
                 match direction:
                     case 'L':
                         knots[0][0] -= 1
@@ -46,19 +45,21 @@ def part2():
                     case 'U':
                         knots[0][1] += 1
                 for i in range(1, len(knots)):
-                    if is_broken(knots[i], knots[i-1]):
-                        knot_move = previous[0] - knots[i][0], previous[1] - knots[i][1]
-                        knots[i], previous = previous[:], knots[i][:]
-                        for knot in knots[i:]:
-                            if (is_broken(knot, previous)) and (knot[0] == previous[0] or knot[1] == previous[1]):
-                                knot[0] += knot_move[0]
-                                knot[1] += knot_move[1]
-                            else:
-                                break
-                        if i == 9:
-                            previous_locations.add(tuple(knots[i]))
-                    else:
-                        break
+                    # COPIED FROM SOMEONE ELSE'S SOLUTION
+                    row_d = knots[i-1][0] - knots[i][0]
+                    col_d = knots[i-1][1] - knots[i][1]
+
+                    if row_d != 0:
+                        row_d -= 1 if row_d > 0 else -1
+
+                    if col_d != 0:
+                        col_d -= 1 if col_d > 0 else -1
+
+                    if row_d or col_d:
+                        knots[i] = (knots[i-1][0] - row_d, knots[i-1][1] - col_d)
+
+                    if i == 9:
+                        previous_locations.add(tuple(knots[i]))
     
     
 
